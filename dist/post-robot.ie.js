@@ -865,7 +865,7 @@
                 setTimeout(function() {
                     try {
                         var logLevel = window.LOG_LEVEL || __WEBPACK_IMPORTED_MODULE_1__conf__.b.LOG_LEVEL;
-                        if (LOG_LEVELS.indexOf(level) < LOG_LEVELS.indexOf(logLevel)) return;
+                        if ("disabled" === logLevel || LOG_LEVELS.indexOf(level) < LOG_LEVELS.indexOf(logLevel)) return;
                         if (args = Array.prototype.slice.call(args), args.unshift("" + window.location.host + window.location.pathname), 
                         args.unshift("::"), args.unshift("" + __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util__.c)().toLowerCase()), 
                         args.unshift("[post-robot]"), __WEBPACK_IMPORTED_MODULE_1__conf__.b.LOG_TO_PAGE && log.writeToPage(level, args), 
@@ -1151,7 +1151,7 @@
                 var level = void 0;
                 if (level = -1 !== __WEBPACK_IMPORTED_MODULE_2__conf__.c.indexOf(message.name) || message.type === __WEBPACK_IMPORTED_MODULE_2__conf__.a.POST_MESSAGE_TYPE.ACK ? "debug" : "error" === message.ack ? "error" : "info", 
                 __WEBPACK_IMPORTED_MODULE_3__lib__.c.logLevel(level, [ "\n\n\t", "#send", message.type.replace(/^postrobot_message_/, ""), "::", message.name, "::", domain || __WEBPACK_IMPORTED_MODULE_2__conf__.a.WILDCARD, "\n\n", message ]), 
-                win === window && !__WEBPACK_IMPORTED_MODULE_2__conf__.b.ALLOW_SAME_ORIGIN) throw new Error("Attemping to send message to self");
+                win === window && !__WEBPACK_IMPORTED_MODULE_2__conf__.b.ALLOW_SAME_ORIGIN && !__WEBPACK_IMPORTED_MODULE_2__conf__.b.ALLOW_SAME_WINDOW) throw new Error("Attemping to send message to self");
                 if (__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0_cross_domain_utils_src__.e)(win)) throw new Error("Window is closed");
                 __WEBPACK_IMPORTED_MODULE_3__lib__.c.debug("Running send message strategies", message);
                 var messages = [], serializedMessage = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__lib__.k)(_defineProperty({}, __WEBPACK_IMPORTED_MODULE_2__conf__.a.WINDOW_PROPS.POSTROBOT, message), null, 2);
@@ -2061,7 +2061,8 @@
             _defineProperty(_ALLOWED_POST_MESSAGE, __WEBPACK_IMPORTED_MODULE_0__constants__.a.SEND_STRATEGIES.BRIDGE, !0), 
             _defineProperty(_ALLOWED_POST_MESSAGE, __WEBPACK_IMPORTED_MODULE_0__constants__.a.SEND_STRATEGIES.GLOBAL, !0), 
             _ALLOWED_POST_MESSAGE),
-            ALLOW_SAME_ORIGIN: !1
+            ALLOW_SAME_ORIGIN: !1,
+            ALLOW_SAME_WINDOW: !1
         };
         0 === window.location.href.indexOf(__WEBPACK_IMPORTED_MODULE_0__constants__.a.FILE_PROTOCOL) && (CONFIG.ALLOW_POSTMESSAGE_POPUP = !0);
     }, function(module, __webpack_exports__, __webpack_require__) {
@@ -2148,7 +2149,10 @@
         }, RECEIVE_MESSAGE_TYPES = (_RECEIVE_MESSAGE_TYPE = {}, _defineProperty(_RECEIVE_MESSAGE_TYPE, __WEBPACK_IMPORTED_MODULE_2__conf__.a.POST_MESSAGE_TYPE.ACK, function(source, origin, message) {
             if (!__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5__listeners__.a)(message.hash)) {
                 var options = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5__listeners__.b)(message.hash);
-                if (!options) throw new Error("No handler found for post message ack for message: " + message.name + " from " + origin + " in " + window.location.protocol + "//" + window.location.host + window.location.pathname);
+                if (!options) {
+                    if (__WEBPACK_IMPORTED_MODULE_2__conf__.b.ALLOW_SAME_WINDOW) return;
+                    throw new Error("No handler found for post message ack for message: " + message.name + " from " + origin + " in " + window.location.protocol + "//" + window.location.host + window.location.pathname);
+                }
                 if (!__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1_cross_domain_utils_src__.f)(options.domain, origin)) throw new Error("Ack origin " + origin + " does not match domain " + options.domain.toString());
                 options.ack = !0;
             }
@@ -2165,7 +2169,7 @@
                 win: source,
                 domain: origin
             });
-            return __WEBPACK_IMPORTED_MODULE_0_zalgo_promise_src__.a.all([ respond({
+            if (options || !__WEBPACK_IMPORTED_MODULE_2__conf__.b.ALLOW_SAME_WINDOW) return __WEBPACK_IMPORTED_MODULE_0_zalgo_promise_src__.a.all([ respond({
                 type: __WEBPACK_IMPORTED_MODULE_2__conf__.a.POST_MESSAGE_TYPE.ACK
             }), __WEBPACK_IMPORTED_MODULE_0_zalgo_promise_src__.a.try(function() {
                 if (!options) throw new Error("No handler found for post message: " + message.name + " from " + origin + " in " + window.location.protocol + "//" + window.location.host + window.location.pathname);
@@ -2197,7 +2201,10 @@
         }), _defineProperty(_RECEIVE_MESSAGE_TYPE, __WEBPACK_IMPORTED_MODULE_2__conf__.a.POST_MESSAGE_TYPE.RESPONSE, function(source, origin, message) {
             if (!__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5__listeners__.a)(message.hash)) {
                 var options = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5__listeners__.b)(message.hash);
-                if (!options) throw new Error("No handler found for post message response for message: " + message.name + " from " + origin + " in " + window.location.protocol + "//" + window.location.host + window.location.pathname);
+                if (!options) {
+                    if (__WEBPACK_IMPORTED_MODULE_2__conf__.b.ALLOW_SAME_WINDOW) return;
+                    throw new Error("No handler found for post message response for message: " + message.name + " from " + origin + " in " + window.location.protocol + "//" + window.location.host + window.location.pathname);
+                }
                 if (!__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1_cross_domain_utils_src__.f)(options.domain, origin)) throw new Error("Response origin " + origin + " does not match domain " + options.domain);
                 if (__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5__listeners__.d)(message.hash), 
                 message.ack === __WEBPACK_IMPORTED_MODULE_2__conf__.a.POST_MESSAGE_ACK.ERROR) {
