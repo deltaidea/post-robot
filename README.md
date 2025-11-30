@@ -12,6 +12,14 @@ Send a message to another window, and:
 - Set up a [secure message channel](#secure-message-channel) between two windows on a certain domain
 - Send messages between a [parent and a popup window](#parent-to-popup-messaging) in IE
 
+## Fork deprecation notice
+
+- This fork was created to make this Pull Request: https://github.com/krakenjs/post-robot/pull/55
+- It was implemented in: https://github.com/krakenjs/post-robot/commit/a1da00d5acc1ed1bdf19f9e67ea6a2e3e1abefc3
+- A project of mine still uses the PR branch: https://github.com/vk-x/vk-x/blob/6ae3ed942da48fa5c243f0598d4f886401d93526/package.json#L41
+
+This fork may be deleted once that dependency is updated.
+
 ## Serialization
 
 post-robot will serialize and deserialize the following data types in messages:
